@@ -2,7 +2,8 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>मेरा लर्निंग ऐप - PDF के साथ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मेरा लर्निंग ऐप - मल्टीपल क्लासेस</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,12 +21,13 @@
             justify-content: center;
             gap: 20px;
             padding: 30px;
+            flex-wrap: wrap;
         }
         .card {
             background: white;
             padding: 20px;
             border-radius: 10px;
-            width: 220px;
+            width: 240px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         button, .pdf-btn {
@@ -43,7 +45,7 @@
             background-color: #1d4ed8;
         }
         #class-box {
-            max-width: 700px;
+            max-width: 750px;
             margin: 20px auto;
             background: white;
             padding: 25px;
@@ -77,19 +79,29 @@
         }
         iframe {
             width: 100%;
-            height: 350px;
+            height: 360px;
             border-radius: 8px;
-        }
-        .note-item {
-            background: white;
-            padding: 15px;
-            border-left: 4px solid #2563eb;
             margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* वीडियो और PDF की लिस्ट के आइटम का डिज़ाइन */
+        .list-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-item:hover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
         }
         .pdf-btn {
-            background-color: #16a34a; /* हरा रंग PDF बटन के लिए */
-            margin-top: 10px;
+            background-color: #16a34a;
+            padding: 8px 12px;
+            font-size: 13px;
         }
         .pdf-btn:hover {
             background-color: #15803d;
@@ -100,21 +112,21 @@
 
     <header>
         <h1>मेरा लर्निंग ऐप</h1>
-        <p>पढ़ाई शुरू करने के लिए किसी विषय पर क्लिक करें</p>
+        <p>किसी भी बैच पर क्लिक करें और सभी लेक्चर व PDF देखें</p>
     </header>
 
     <!-- विषयों के कार्ड -->
     <div class="box-container">
         <div class="card">
             <h2>विज्ञान (Science)</h2>
-            <p>सौर मंडल और ग्रहों की जानकारी।</p>
+            <p>सौर मंडल, प्रकाश और मानव शरीर।</p>
             <button onclick="openSubject('science')">बैच खोलें</button>
         </div>
 
         <div class="card">
-            <h2>गणित (Math)</h2>
-            <p>प्रतिशत (Percentage) की ट्रिक्स।</p>
-            <button onclick="openSubject('math')">बैच खोलें</button>
+            <h2>सामान्य ज्ञान (GS / GK)</h2>
+            <p>भारतीय इतिहास, भूगोल और संविधान।</p>
+            <button onclick="openSubject('gk')">बैच खोलें</button>
         </div>
     </div>
 
@@ -123,57 +135,100 @@
         <h2 id="subject-title">विषय का नाम</h2>
 
         <div class="tabs">
-            <button id="btn-video" class="tab-btn active" onclick="switchTab('video')">🎥 वीडियो लेक्चर</button>
-            <button id="btn-notes" class="tab-btn" onclick="switchTab('notes')">📄 क्लास नोट्स (PDF)</button>
+            <button id="btn-video" class="tab-btn active" onclick="switchTab('video')">🎥 सभी वीडियो लेक्चर</button>
+            <button id="btn-notes" class="tab-btn" onclick="switchTab('notes')">📄 सभी PDF नोट्स</button>
         </div>
 
-        <!-- 1. वीडियो सेक्शन -->
+        <!-- 1. वीडियो सेक्शन (प्लेयर + वीडियो की लिस्ट) -->
         <div id="video-section" class="section-content">
-            <h3 id="video-topic">लेक्चर 1</h3>
+            <h3 id="current-video-title">लेक्चर का नाम</h3>
             <iframe id="video-player" src="" frameborder="0" allowfullscreen></iframe>
+            
+            <h4>लेक्चर लिस्ट (चलाने के लिए क्लिक करें):</h4>
+            <div id="video-list"></div>
         </div>
 
-        <!-- 2. नोट्स और PDF सेक्शन -->
+        <!-- 2. नोट्स और PDF सेक्शन (PDF की लिस्ट) -->
         <div id="notes-section" class="section-content" style="display: none;">
-            <h3>अध्ययन सामग्री (Study Notes)</h3>
-            <div class="note-item">
-                <p id="notes-text">यहाँ नोट्स दिखेंगे...</p>
-                <!-- PDF खोलने का बटन -->
-                <a id="pdf-link" href="#" target="_blank" class="pdf-btn">📥 PDF नोट्स खोलें / डाउनलोड करें</a>
-            </div>
+            <h3>उपलब्ध PDF नोट्स:</h3>
+            <div id="pdf-list"></div>
         </div>
     </div>
 
     <script>
+        // डेटाबेस: अब हर विषय में कई videos और कई pdfs की लिस्ट है
         const appData = {
             science: {
-                title: "विज्ञान बैच (Science)",
-                videoTopic: "क्लास 1: सौर मंडल (Solar System)",
-                videoUrl: "https://youtube.com",
-                notes: "1. सूर्य हमारे सौर मंडल का केंद्र है।\n2. पृथ्वी सूर्य से तीसरा ग्रह है।",
-                // यहाँ आप अपनी Google Drive या किसी भी PDF का लिंक डाल सकते हैं
-                pdfUrl: "https://w3.org"
+                title: "विज्ञान बैच (Science Special)",
+                videos: [
+                    { name: "क्लास 1: सौर मंडल (Solar System)", url: "https://youtube.com" },
+                    { name: "क्लास 2: पृथ्वी और उसकी गतियाँ", url: "https://youtube.com" },
+                    { name: "क्लास 3: मानव पाचन तंत्र (Digestive System)", url: "https://youtube.com" }
+                ],
+                pdfs: [
+                    { title: "नोट्स 1: सौर मंडल मुख्य बिंदु (PDF)", link: "https://w3.org" },
+                    { title: "नोट्स 2: भौतिक विज्ञान महत्वपूर्ण सूत्र (PDF)", link: "https://w3.org" }
+                ]
             },
-            math: {
-                title: "गणित बैच (Mathematics)",
-                videoTopic: "क्लास 1: प्रतिशत (Percentage) शॉर्ट ट्रिक्स",
-                videoUrl: "https://youtube.com",
-                notes: "1. प्रतिशत का अर्थ प्रति सौ (Per 100) होता है।\n2. 50% का मतलब किसी भी संख्या का आधा (1/2) होता है।",
-                pdfUrl: "https://w3.org"
+            gk: {
+                title: "सामान्य ज्ञान बैच (GS Foundation)",
+                videos: [
+                    { name: "क्लास 1: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
+                    { name: "क्लास 2: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" }
+                ],
+                pdfs: [
+                    { title: "नोट्स 1: भारत का भूगोल मैप सहित (PDF)", link: "https://w3.org" },
+                    { title: "नोट्स 2: भारतीय राजव्यवस्था शॉर्ट नोट्स (PDF)", link: "https://w3.org" },
+                    { title: "नोट्स 3: आधुनिक भारत का इतिहास (PDF)", link: "https://w3.org" }
+                ]
             }
         };
 
+        // बैच खोलने का फ़ंक्शन
         function openSubject(subject) {
-            document.getElementById("subject-title").innerText = appData[subject].title;
-            document.getElementById("video-topic").innerText = appData[subject].videoTopic;
-            document.getElementById("video-player").src = appData[subject].videoUrl;
-            document.getElementById("notes-text").innerText = appData[subject].notes;
-            document.getElementById("pdf-link").href = appData[subject].pdfUrl;
+            const data = appData[subject];
+            document.getElementById("subject-title").innerText = data.title;
+
+            // 1. पहला वीडियो अपने आप प्लेयर में लोड करना
+            playVideo(data.videos[0].name, data.videos[0].url);
+
+            // 2. सभी वीडियो की लिस्ट बनाना (Loop चलाकर)
+            const videoListDiv = document.getElementById("video-list");
+            videoListDiv.innerHTML = ""; // पुरानी लिस्ट साफ़ करें
+            
+            data.videos.forEach((vid) => {
+                videoListDiv.innerHTML += `
+                    <div class="list-item">
+                        <span>▶️ ${vid.name}</span>
+                        <button onclick="playVideo('${vid.name}', '${vid.url}')">देखें</button>
+                    </div>
+                `;
+            });
+
+            // 3. सभी PDF की लिस्ट बनाना (Loop चलाकर)
+            const pdfListDiv = document.getElementById("pdf-list");
+            pdfListDiv.innerHTML = ""; // पुरानी लिस्ट साफ़ करें
+            
+            data.pdfs.forEach((pdf) => {
+                pdfListDiv.innerHTML += `
+                    <div class="list-item">
+                        <span>📄 ${pdf.title}</span>
+                        <a href="${pdf.link}" target="_blank" class="pdf-btn">📥 डाउनलोड PDF</a>
+                    </div>
+                `;
+            });
 
             document.getElementById("class-box").style.display = "block";
             switchTab('video');
         }
 
+        // लिस्ट से किसी भी वीडियो को प्लेयर में चलाने का फ़ंक्शन
+        function playVideo(title, url) {
+            document.getElementById("current-video-title").innerText = title;
+            document.getElementById("video-player").src = url;
+        }
+
+        // टैब बदलने का फ़ंक्शन
         function switchTab(tabName) {
             if (tabName === 'video') {
                 document.getElementById("video-section").style.display = "block";
