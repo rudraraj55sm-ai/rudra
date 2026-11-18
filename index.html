@@ -191,7 +191,13 @@
             document.getElementById("subject-title").innerText = data.title;
 
             // 1. पहला वीडियो अपने आप प्लेयर में लोड करना
-            playVideo(data.videos[0].name, data.videos[0].url);
+            playVideo(data.videos[0].name, data.videos[0].url);videos: [
+    { name: "क्लास 1: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
+    { name: "क्लास 2: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" },
+    { name: "क्लास 3: अक्टूबर 2026 मंथली करंट अफेयर्स", url: "https://youtube.com" }
+],
+
+                
 
             // 2. सभी वीडियो की लिस्ट बनाना (Loop चलाकर)
             const videoListDiv = document.getElementById("video-list");
