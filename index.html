@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मेरा लर्निंग ऐप - मल्टीपल क्लासेस</title>
+    <title>मेरा लर्निंग ऐप</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -83,7 +83,6 @@
             border-radius: 8px;
             margin-bottom: 15px;
         }
-        /* वीडियो और PDF की लिस्ट के आइटम का डिज़ाइन */
         .list-item {
             background: white;
             padding: 12px 15px;
@@ -115,7 +114,6 @@
         <p>किसी भी बैच पर क्लिक करें और सभी लेक्चर व PDF देखें</p>
     </header>
 
-    <!-- विषयों के कार्ड -->
     <div class="box-container">
         <div class="card">
             <h2>विज्ञान (Science)</h2>
@@ -124,13 +122,12 @@
         </div>
 
         <div class="card">
-            <h2>सामान्य ज्ञान (GS / GK)</h2>
-            <p>भारतीय इतिहास, भूगोल और संविधान।</p>
+            <h2>सामान्य ज्ञान और करंट अफेयर्स</h2>
+            <p>अक्टूबर 2026 करंट अफेयर्स, भूगोल और संविधान।</p>
             <button onclick="openSubject('gk')">बैच खोलें</button>
         </div>
     </div>
 
-    <!-- बैच के अंदर का हिस्सा -->
     <div id="class-box">
         <h2 id="subject-title">विषय का नाम</h2>
 
@@ -139,17 +136,14 @@
             <button id="btn-notes" class="tab-btn" onclick="switchTab('notes')">📄 सभी PDF नोट्स</button>
         </div>
 
-        <!-- 1. वीडियो सेक्शन (प्लेयर + वीडियो की लिस्ट) -->
         <div id="video-section" class="section-content">
             <h3 id="current-video-title">लेक्चर का नाम</h3>
-            <iframe id="video-player" src="" frameborder="0" allowfullscreen></iframe>,https://youtu.be/HFkBz_1bARM?si=9MbJBGjZ_FxSLx_b
-            
+            <iframe id="video-player" src="" frameborder="0" allowfullscreen></iframe>
             
             <h4>लेक्चर लिस्ट (चलाने के लिए क्लिक करें):</h4>
             <div id="video-list"></div>
-        </div>,https://youtu.be/HFkBz_1bARM?si=9MbJBGjZ_FxSLx_b
+        </div>
 
-        <!-- 2. नोट्स और PDF सेक्शन (PDF की लिस्ट) -->
         <div id="notes-section" class="section-content" style="display: none;">
             <h3>उपलब्ध PDF नोट्स:</h3>
             <div id="pdf-list"></div>
@@ -157,51 +151,38 @@
     </div>
 
     <script>
-        // डेटाबेस: अब हर विषय में कई videos और कई pdfs की लिस्ट है
         const appData = {
             science: {
                 title: "विज्ञान बैच (Science Special)",
                 videos: [
                     { name: "क्लास 1: सौर मंडल (Solar System)", url: "https://youtube.com" },
-                    { name: "क्लास 2: पृथ्वी और उसकी गतियाँ", url: "https://youtube.com" },
-                    { name: "क्लास 3: मानव पाचन तंत्र (Digestive System)", url: "https://youtube.com" }
+                    { name: "क्लास 2: पृथ्वी और उसकी गतियाँ", url: "https://youtube.com" }
                 ],
                 pdfs: [
-                    { title: "नोट्स 1: सौर मंडल मुख्य बिंदु (PDF)", link: "https://w3.org" },
-                    { title: "नोट्स 2: भौतिक विज्ञान महत्वपूर्ण सूत्र (PDF)", link: "https://w3.org" }
+                    { title: "नोट्स 1: सौर मंडल मुख्य बिंदु (PDF)", link: "https://w3.org" }
                 ]
             },
             gk: {
-                title: "सामान्य ज्ञान बैच (GS Foundation)",
+                title: "सामान्य ज्ञान और करंट अफेयर्स बैच",
                 videos: [
-                    { name: "क्लास 1: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
-                    { name: "क्लास 2: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" }
+                    { name: "क्लास 1: अक्टूबर 2026 मंथली करंट अफेयर्स", url: "https://youtube.com" },
+                    { name: "क्लास 2: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
+                    { name: "क्लास 3: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" }
                 ],
                 pdfs: [
-                    { title: "नोट्स 1: भारत का भूगोल मैप सहित (PDF)", link: "https://w3.org" },
-                    { title: "नोट्स 2: भारतीय राजव्यवस्था शॉर्ट नोट्स (PDF)", link: "https://w3.org" },
-                    { title: "नोट्स 3: आधुनिक भारत का इतिहास (PDF)", link: "https://w3.org" }
+                    { title: "नोट्स 1: करंट अफेयर्स और भूगोल नोट्स (PDF)", link: "https://w3.org" }
                 ]
             }
         };
 
-        // बैच खोलने का फ़ंक्शन
         function openSubject(subject) {
             const data = appData[subject];
             document.getElementById("subject-title").innerText = data.title;
 
-            // 1. पहला वीडियो अपने आप प्लेयर में लोड करना
-            playVideo(data.videos[0].name, data.videos[0].url);videos: [
-    { name: "क्लास 1: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
-    { name: "क्लास 2: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" },
-    { name: "क्लास 3: अक्टूबर 2026 मंथली करंट अफेयर्स", url: "https://youtube.com" }
-],
+            playVideo(data.videos[0].name, data.videos[0].url);
 
-                
-
-            // 2. सभी वीडियो की लिस्ट बनाना (Loop चलाकर)
             const videoListDiv = document.getElementById("video-list");
-            videoListDiv.innerHTML = ""; // पुरानी लिस्ट साफ़ करें
+            videoListDiv.innerHTML = "";
             
             data.videos.forEach((vid) => {
                 videoListDiv.innerHTML += `
@@ -212,9 +193,8 @@
                 `;
             });
 
-            // 3. सभी PDF की लिस्ट बनाना (Loop चलाकर)
             const pdfListDiv = document.getElementById("pdf-list");
-            pdfListDiv.innerHTML = ""; // पुरानी लिस्ट साफ़ करें
+            pdfListDiv.innerHTML = "";
             
             data.pdfs.forEach((pdf) => {
                 pdfListDiv.innerHTML += `
@@ -229,13 +209,11 @@
             switchTab('video');
         }
 
-        // लिस्ट से किसी भी वीडियो को प्लेयर में चलाने का फ़ंक्शन
         function playVideo(title, url) {
             document.getElementById("current-video-title").innerText = title;
             document.getElementById("video-player").src = url;
         }
 
-        // टैब बदलने का फ़ंक्शन
         function switchTab(tabName) {
             if (tabName === 'video') {
                 document.getElementById("video-section").style.display = "block";
@@ -253,3 +231,4 @@
 
 </body>
 </html>
+
