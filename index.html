@@ -30,7 +30,7 @@
             width: 240px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        button, .pdf-btn {
+        button, .pdf-btn, .yt-btn {
             background-color: #2563eb;
             color: white;
             border: none;
@@ -43,6 +43,13 @@
         }
         button:hover, .pdf-btn:hover {
             background-color: #1d4ed8;
+        }
+        .yt-btn {
+            background-color: #dc2626;
+            margin-bottom: 15px;
+        }
+        .yt-btn:hover {
+            background-color: #b91c1c;
         }
         #class-box {
             max-width: 750px;
@@ -81,7 +88,8 @@
             width: 100%;
             height: 360px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            background-color: #000;
         }
         .list-item {
             background: white;
@@ -138,8 +146,11 @@
 
         <div id="video-section" class="section-content">
             <h3 id="current-video-title">लेक्चर का नाम</h3>
-            <iframe id="video-player" src="" frameborder="0" allowfullscreen></iframe>
+            <iframe id="video-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             
+            <!-- अगर कोई वीडियो यहाँ ब्लॉक हो तो सीधे YouTube पर खोलने का बटन -->
+            <a id="direct-yt-link" href="#" target="_blank" class="yt-btn">▶️ सीधे YouTube पर चलाएं (यदि यहाँ न चले)</a>
+
             <h4>लेक्चर लिस्ट (चलाने के लिए क्लिक करें):</h4>
             <div id="video-list"></div>
         </div>
@@ -155,8 +166,8 @@
             science: {
                 title: "विज्ञान बैच (Science Special)",
                 videos: [
-                    { name: "क्लास 1: सौर मंडल (Solar System)", url: "https://youtube.com" },
-                    { name: "क्लास 2: पृथ्वी और उसकी गतियाँ", url: "https://youtube.com" }
+                    { name: "क्लास 1: सौर मंडल (Solar System)", id: "libKVRa01L8" },
+                    { name: "क्लास 2: पृथ्वी और उसकी गतियाँ", id: "l64YwNl1wr0" }
                 ],
                 pdfs: [
                     { title: "नोट्स 1: सौर मंडल मुख्य बिंदु (PDF)", link: "https://w3.org" }
@@ -165,9 +176,9 @@
             gk: {
                 title: "सामान्य ज्ञान और करंट अफेयर्स बैच",
                 videos: [
-                    { name: "क्लास 1: अक्टूबर 2026 मंथली करंट अफेयर्स", url: "https://youtube.com" },
-                    { name: "क्लास 2: भारत की प्रमुख नदियाँ", url: "https://youtube.com" },
-                    { name: "क्लास 3: भारतीय संविधान की प्रस्तावना", url: "https://youtube.com" }
+                    { name: "क्लास 1: अक्टूबर 2026 मंथली करंट अफेयर्स", id: "HFkBz_1bARM" },
+                    { name: "क्लास 2: भारत की प्रमुख नदियाँ", id: "2y6F_N27s_Y" },
+                    { name: "क्लास 3: भारतीय संविधान की प्रस्तावना", id: "sDstf8ockQg" }
                 ],
                 pdfs: [
                     { title: "नोट्स 1: करंट अफेयर्स और भूगोल नोट्स (PDF)", link: "https://w3.org" }
@@ -179,7 +190,8 @@
             const data = appData[subject];
             document.getElementById("subject-title").innerText = data.title;
 
-            playVideo(data.videos[0].name, data.videos[0].url);
+            // यहाँ [0] जोड़ा गया है ताकि पहला वीडियो सही से लोड हो
+            playVideo(data.videos[0].name, data.videos[0].id);
 
             const videoListDiv = document.getElementById("video-list");
             videoListDiv.innerHTML = "";
@@ -188,7 +200,7 @@
                 videoListDiv.innerHTML += `
                     <div class="list-item">
                         <span>▶️ ${vid.name}</span>
-                        <button onclick="playVideo('${vid.name}', '${vid.url}')">देखें</button>
+                        <button onclick="playVideo('${vid.name}', '${vid.id}')">देखें</button>
                     </div>
                 `;
             });
@@ -209,9 +221,10 @@
             switchTab('video');
         }
 
-        function playVideo(title, url) {
+        function playVideo(title, videoId) {
             document.getElementById("current-video-title").innerText = title;
-            document.getElementById("video-player").src = url;
+            document.getElementById("video-player").src = "https://youtube.com" + videoId;
+            document.getElementById("direct-yt-link").href = "https://youtube.com" + videoId;
         }
 
         function switchTab(tabName) {
@@ -231,4 +244,3 @@
 
 </body>
 </html>
-
